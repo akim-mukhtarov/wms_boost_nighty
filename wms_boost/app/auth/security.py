@@ -3,7 +3,7 @@ from datetime import timedelta
 from jose import jwt
 
 from app.models import User
-from app.utils import get_db
+from app.db import get_db
 from sqlalchemy.orm import Session
 from fastapi import Security, HTTPException, Depends
 from fastapi_jwt import (
