@@ -1,0 +1,10 @@
+venv/*
+
+*.env
+env/*
+
+*.db
+
+api_tests
+
+__pycache__
