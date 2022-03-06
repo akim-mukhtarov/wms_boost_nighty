@@ -1,20 +1,37 @@
 from __future__ import annotations
 from typing import TypeVar, Optional, Callable, Dict, Awaitable
 from fastapi import WebSocket
+from app.models import LastRefundsDump, StorageStepsProgress
+
 import asyncio
 import pydantic
 
 
-
 class WorkplaceResources(pydantic.BaseModel):
+    """ Represents fields of workplace
+        and its related resources to observe """
+    class RefundsDump(pydantic.BaseModel):
+        report_url: str
+        included: int
+        processed: int
 
-    class RefundsDump:
-        def __init__(self, models.LastRefundsDump):
-            pass
+        date: Optional[datetime]
+        status: LastRefundsDump.status_choices
 
-    class StorageSteps:
-        def __init__(self, models.StorageSteps):
-            pass
+        class Config:
+            orm_mode=True
+
+    class StorageSteps(pydantic.BaseModel):
+        report_url: str
+        included: int
+        processed: int
+
+        last_run: Optional[datetime]
+        last_completion: Optional[datetime]
+        status: StorageStepsProgress.status_choices
+
+        class Config:
+            orm_mode=True
 
     last_refunds_dump: RefundsDump
     storage_steps: StorageSteps
@@ -23,8 +40,17 @@ class WorkplaceResources(pydantic.BaseModel):
         orm_mode=True
 
 
-OptionalCallback = TypeVar('OptionalCallback', bind=Optional[Callable])
-AsyncCallback = TypeVar('AsyncCallback', bind=Callable[[Dict], Awaitable[None]])
+AsyncCallback = TypeVar('AsyncCallback', bound=Callable[[Dict], Awaitable[None]])
+OptionalCallback = TypeVar('OptionalCallback', bound=Optional[Callable])
+
+# helper
+def _lists_content_equals(fst, snd) -> bool:
+    equals = map(
+        lambda values: values[0] == values[1],
+        zip(fst, snd)
+    )
+    return all(equals)
+
 
 class WorkplaceObserver:
     """ Will periodically check `Workplace` in database
@@ -48,6 +74,21 @@ class WorkplaceObserver:
         workplace = db.query(Workplace).get(self._workplace_id)
         return workplace
 
+    @staticmethod
+    def _differs(fst, snd) -> bool:
+        """ Check if values of two fields are not equal
+            assume:
+                - no nested dicts
+                - type(fst) == type(snd) """
+        if isinstance(fst, dict):
+            # as of the python >= 3.7, values are ordered
+            # so we can compare lists of values
+            return _lists_content_equals(
+                fst.values(), snd.values())
+        else:
+            # assume some 'primitive' type
+            return fst == snd
+
     def _check_updates(self):
         workplace = self._get_workplace()
         state_dict = WorkplaceResources(workplace).dict()
@@ -56,15 +97,20 @@ class WorkplaceObserver:
             k : v
                 for k, v in (
                     (k, state_dict[k])
-                        for k in self._state
-                            if state_dict[k] != self._state[k]
+                        for k in self._last_state
+                            if self._differs(
+                                state_dict[k], self._last_state[k])
                 )
         }
         return diff
 
+    async def poll(self, period: int):
+        # fetch current state in a first place
+        workplace = self._get_workplace()
+        self._last_state = WorkplaceResources(workplace).dict()
 
-    async def poll(period: int):
         while True:
+            await asyncio.sleep(period)
             # if client has gone, no more polling required
             if self._is_alive and not self._is_alive():
                 break
@@ -75,6 +121,4 @@ class WorkplaceObserver:
                 if len(updates) and self._callback:
                     await self._callback(updates)
             except Exception:
-                break
-
-            await asyncio.sleep(period)
+                break   # no handler yet, just break
