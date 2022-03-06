@@ -23,13 +23,7 @@ class AuthResult:
         self._raise_for_status(response, status_code)
         try:
             json = response.json()
-
-            try:
-                self.user_info = self.UserInfo.parse_obj(json['userInfo'])
-            except Exception as e:
-                print(f'exception: {e}')
-                raise e
-
+            self.user_info = self.UserInfo.parse_obj(json['userInfo'])
             self.access_token = json['access_token']
             self.refresh_token = json['refresh_token']
         except Exception as e:
