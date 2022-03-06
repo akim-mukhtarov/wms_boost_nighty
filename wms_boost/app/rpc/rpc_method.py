@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, ValidationError
 from jsonrpcserver import method, InvalidParams
 
