@@ -21,7 +21,7 @@ def authenticate(creds) -> AuthResult:
     except WmsServerError:
         raise HTTPException(523)
     except AuthenticationError:
-        rause HTTPException(403)
+        raise HTTPException(403)
 
 
 @app.post('/auth/token', response_model=Tokens)
