@@ -37,4 +37,4 @@ def dump_ready_refunds(user: User, last_dump: LastRefundsDump) -> int:
 
     just_included = SheetsService.append(last_dump.report_url, refunds)
     last_dump.add_items(just_included)
-    return last_dump.included
+    return just_included
