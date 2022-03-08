@@ -45,7 +45,7 @@ def get_workplace(
         raise WorkplaceNotFound()
     return workplace
 
-
+# helper
 async def auth_connection(ws: WebSocket) -> bool:
     await ws.accept()
     token = await ws.receive_text()
@@ -57,12 +57,13 @@ async def auth_connection(ws: WebSocket) -> bool:
 async def workplace_updates(ws: WebSocket, workplace_id: int):
     """ Check updates on workplace and
         its related resources and return json """
+
     if not await auth_connection(ws):
         await ws.close(code=status.WS_1008_POLICY_VIOLATION)
-
+    # TODO: consider rewrite with async context manager
     observer = WorkplaceObserver(workplace_id)\
             .on_update(ws.send_json)\
-            .check_alive(lambda: ws.client_status.name == 'CONNECTED')
+            .check_alive(lambda: ws.client_state.name == "CONNECTED")
 
     await observer.poll(period=5)
     await ws.close()    # ??
