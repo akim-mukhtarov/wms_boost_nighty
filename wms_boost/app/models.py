@@ -39,7 +39,11 @@ class LastRefundsDump(Base):
 
     date = Column(DateTime, nullable=True)
     status_choices = Enum('status_choices', 'default enqueued completed')
-    status = Column(DbEnum(status_choices))
+    status = Column(
+        DbEnum(status_choices),
+        nullable=False,
+        default=status_choices.default
+    )
 
 
 class StorageStepsProgress(Base):
@@ -50,7 +54,7 @@ class StorageStepsProgress(Base):
 
     report_url = Column(String(256))
     included = Column(Integer, default=0)
-    processed = Column(Integer)
+    processed = Column(Integer, default=0)
 
     last_run = Column(DateTime, nullable=True)
     last_completion = Column(DateTime, nullable=True)
@@ -61,7 +65,11 @@ class StorageStepsProgress(Base):
         'accepted',
         'completed'
     ])
-    status = Column(DbEnum(status_choices))
+    status = Column(
+        DbEnum(status_choices),
+        nullable=False,
+        default=status_choices.default
+    )
 
 
 class Workplace(Base):
