@@ -29,7 +29,7 @@ def emit_tokens(
         creds: OAuth2PasswordRequestForm = Depends(),
         db: Session = Depends(get_db)):
 
-    auth_result = authenticate(creds).user_info
+    auth_result = authenticate(creds)
     user_info = auth_result.user_info
     user = get_or_create_user(db, user_info)
 
