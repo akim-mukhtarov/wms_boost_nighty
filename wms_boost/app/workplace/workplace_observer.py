@@ -1,7 +1,14 @@
 from __future__ import annotations
 from typing import TypeVar, Optional, Callable, Dict, Awaitable
+from datetime import datetime
 from fastapi import WebSocket
-from app.models import LastRefundsDump, StorageStepsProgress
+
+from app.db import get_db
+from app.models import (
+    Workplace,
+    LastRefundsDump,
+    StorageStepsProgress
+)
 
 import asyncio
 import pydantic
@@ -10,6 +17,9 @@ import pydantic
 class WorkplaceResources(pydantic.BaseModel):
     """ Represents fields of workplace
         and its related resources to observe """
+    short_name: str
+    timezone: str
+
     class RefundsDump(pydantic.BaseModel):
         report_url: str
         included: int
@@ -20,6 +30,7 @@ class WorkplaceResources(pydantic.BaseModel):
 
         class Config:
             orm_mode=True
+            use_enum_values=True
 
     class StorageSteps(pydantic.BaseModel):
         report_url: str
@@ -32,9 +43,10 @@ class WorkplaceResources(pydantic.BaseModel):
 
         class Config:
             orm_mode=True
+            use_enum_values=True
 
-    last_refunds_dump: RefundsDump
-    storage_steps: StorageSteps
+    last_refunds_dump: WorkplaceResources.RefundsDump
+    storage_steps_progress: WorkplaceResources.StorageSteps
 
     class Config:
         orm_mode=True
@@ -80,18 +92,22 @@ class WorkplaceObserver:
             assume:
                 - no nested dicts
                 - type(fst) == type(snd) """
+        assert (
+            type(fst) is type(snd)
+        ), "Fields to compare must be of the same type"
+
         if isinstance(fst, dict):
             # as of the python >= 3.7, values are ordered
             # so we can compare lists of values
-            return _lists_content_equals(
+            return not _lists_content_equals(
                 fst.values(), snd.values())
         else:
             # assume some 'primitive' type
-            return fst == snd
+            return fst != snd
 
     def _check_updates(self):
         workplace = self._get_workplace()
-        state_dict = WorkplaceResources(workplace).dict()
+        state_dict = WorkplaceResources.from_orm(workplace).dict()
         # just a dict of changes
         diff = {
             k : v
@@ -102,12 +118,14 @@ class WorkplaceObserver:
                                 state_dict[k], self._last_state[k])
                 )
         }
+        if len(diff):
+            self._last_state = state_dict
         return diff
 
     async def poll(self, period: int):
         # fetch current state in a first place
         workplace = self._get_workplace()
-        self._last_state = WorkplaceResources(workplace).dict()
+        self._last_state = WorkplaceResources.from_orm(workplace).dict()
 
         while True:
             await asyncio.sleep(period)
@@ -120,5 +138,5 @@ class WorkplaceObserver:
                 updates = self._check_updates()
                 if len(updates) and self._callback:
                     await self._callback(updates)
-            except Exception:
+            except Exception as e:
                 break   # no handler yet, just break
