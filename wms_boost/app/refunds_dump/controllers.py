@@ -13,6 +13,7 @@ from jsonrpcserver import Result, Success, Error
 
 from . import schemas
 from .crud import get_last_refunds_dump
+from .errors import wrap_exception
 
 
 @app.get(
@@ -34,17 +35,18 @@ def dump_refunds(user: User, workplace_id: int) -> Result:
     """ Create and enqueue a task for dumping refunds
         If no refunds to dump, raise an Exception
         To check an execution progress,
-            - connect to `workplace_updates` (websocket)
-            - or GET query `last_refunds_dump` by yourself """
+            - connect to `workplace_updates` via websocket
+            - or query `last_refunds_dump` by yourself """
     db = next(iter(get_db()))
 
     try:
         last_dump = get_last_refunds_dump(db, workplace_id)
-        dump_ready_refunds(user, last_refunds_dump)
-
+        included = dump_ready_refunds(user, last_refunds_dump)
+        
     except Exception as e:
-        return Error()    # handle ?
+        return wrap_exception(e)
+
     else:
         db.add(last_dump)
         db.commit()
-        return Success()
+        return Success(included)
