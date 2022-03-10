@@ -1,14 +1,11 @@
 from app.db import Base
 from sqlalchemy.orm import relationship
-from enum import Enum
-from sqlalchemy import Enum as DbEnum
 from sqlalchemy import (
     Column,
     ForeignKey,
     Integer,
     String,
-    Unicode,
-    DateTime
+    Unicode
 )
 
 
@@ -27,49 +24,30 @@ class User(Base):
         self.wms_refresh_token = refresh_token
 
 
-class LastRefundsDump(Base):
-    __tablename__ = "refunds_dumps"
+class RefundsDumpSettings(Base):
+    __tablename__ = "refunds_dumps_settings"
 
     id = Column(Integer, primary_key=True, index=True)
     workplace_id = Column(Integer, ForeignKey("workplaces.wms_key"))
+    report_url - Column(String(256))
+    redis_key = Column(String(32))
 
-    report_url = Column(String(256))
-    included = Column(Integer, default=0)
-    processed = Column(Integer, default=0)
-
-    date = Column(DateTime, nullable=True)
-    status_choices = Enum('status_choices', 'default enqueued completed')
-    status = Column(
-        DbEnum(status_choices),
-        nullable=False,
-        default=status_choices.default
-    )
+    @classmethod
+    def generate_redis_key(cls, workplace_id: int) -> str:
+        return f'{workplace_id}_{cls.__tablename__}'
 
 
-class StorageStepsProgress(Base):
-    __tablename__ = "storage_steps"
+class StorageStepsSettings(Base):
+    __tablename__ = "storage_steps_settings"
 
     id = Column(Integer, primary_key=True, index=True)
     workplace_id = Column(Integer, ForeignKey("workplaces.wms_key"))
-
     report_url = Column(String(256))
-    included = Column(Integer, default=0)
-    processed = Column(Integer, default=0)
+    redis_key = Column(String(32))
 
-    last_run = Column(DateTime, nullable=True)
-    last_completion = Column(DateTime, nullable=True)
-
-    status_choices = Enum('status_choices', [
-        'default',
-        'enqueued',
-        'accepted',
-        'completed'
-    ])
-    status = Column(
-        DbEnum(status_choices),
-        nullable=False,
-        default=status_choices.default
-    )
+    @classmethod
+    def generate_redis_key(cls, workplace_id: int) -> str:
+        return f'{workplace_id}_{cls.__tablename__}'
 
 
 class Workplace(Base):
@@ -79,12 +57,12 @@ class Workplace(Base):
     short_name = Column(Unicode(8))
     timezone = Column(String(32))
 
-    last_refunds_dump = relationship(
-        "LastRefundsDump",
+    refunds_dump_settings = relationship(
+        "RefundsDumpSettings",
         backref="workplace",
         uselist=False)
 
-    storage_steps_progress = relationship(
-        "StorageStepsProgress",
+    storage_steps_settings = relationship(
+        "StorageStepsSettings",
         backref="workplace",
         uselist=False)
