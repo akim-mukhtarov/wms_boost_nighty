@@ -13,7 +13,7 @@ from app.models import (
 import asyncio
 import pydantic
 
-
+'''
 class WorkplaceResources(pydantic.BaseModel):
     """ Represents fields of workplace
         and its related resources to observe """
@@ -140,3 +140,4 @@ class WorkplaceObserver:
                     await self._callback(updates)
             except Exception as e:
                 break   # no handler yet, just break
+'''
