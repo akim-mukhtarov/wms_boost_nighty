@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 from app.models import Workplace
 from app.utils.client_time import ClientTime
 from app.redis import REDIS_POOL
@@ -8,7 +8,8 @@ import redis
 # helper
 def _get_next_midnight(timezone_name: str) -> int:
     client_time = ClientTime(timezone_name)
-    pass
+    next_midnight = client_time.days_diff(1)
+    return next_midnight.timestamp()
 
 
 class TodayDump:
@@ -23,7 +24,7 @@ class TodayDump:
     def __init__(self, workplace: Workplace):
         self._redis_conn = redis.Redis(connection_pool=REDIS_POOL)
 
-        last_dump = workplace.last_refunds_dump
+        last_dump = workplace.refunds_dump_settings
 
         self._id = last_dump.id
         self._workplace_id = last_dump.workplace_id
