@@ -29,7 +29,7 @@ class RefundsDumpSettings(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     workplace_id = Column(Integer, ForeignKey("workplaces.wms_key"))
-    report_url - Column(String(256))
+    report_url = Column(String(256))
     redis_key = Column(String(32))
 
     @classmethod

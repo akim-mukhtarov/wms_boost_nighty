@@ -1,3 +1,4 @@
+'''
 from __future__ import annotations
 from typing import TypeVar, Optional, Callable, Dict, Awaitable
 from datetime import datetime
@@ -12,7 +13,7 @@ from app.models import (
 
 import asyncio
 import pydantic
-
+'''
 '''
 class WorkplaceResources(pydantic.BaseModel):
     """ Represents fields of workplace

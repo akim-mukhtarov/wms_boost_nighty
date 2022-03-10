@@ -15,8 +15,8 @@ from sqlalchemy.orm import Session
 from jsonrpcserver import Result, Success, Error
 
 from .crud import init_workplace as init_db_workplace
-from .crud import get_workplace
-from .workplace_observer import WorkplaceObserver
+from .crud import get_workplace as get_workplace_
+# from .workplace_observer import WorkplaceObserver
 from . import schemas
 from .workplace import Workplace
 
@@ -24,7 +24,7 @@ from .workplace import Workplace
 @rpc_method
 def init_workplace(data: schemas.WorkplaceCreate) -> Result:
     """  Initialize `Workplace` and linked resources:
-            `LastRefundsDump` and `StorageStepsProgress` """
+            `RefundsDumpSettings` and `StorageStepsSettings` """
     db = next(iter(get_db()))
 
     db_workplace = db.query(DbWorkplace).get(data.wms_key)
@@ -42,9 +42,9 @@ def get_workplace(
         db: Session = Depends(get_db),
         user: User = Depends(get_current_user)
 ):
-    db_workplace = get_workplace(db, workplace_id)
+    db_workplace = get_workplace_(db, workplace_id)
     return Workplace(db_workplace)
-
+''''
 # helper
 async def auth_connection(ws: WebSocket) -> bool:
     await ws.accept()
@@ -67,3 +67,4 @@ async def workplace_updates(ws: WebSocket, workplace_id: int):
 
     await observer.observe()
     await ws.close()    # ??
+'''
