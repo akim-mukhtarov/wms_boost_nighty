@@ -17,3 +17,6 @@ The tasks are the following:
     notifications for clients about storage expiration, send via SMS.
     Implemented as a background task (RabbitMQ), the progress is available
     through a websocket connection.
+
+For both of them constant settings and data is stored in DB, and a state
+which thought to be accumulated within a day - in Redis
