@@ -1,6 +1,6 @@
 import pytz
-from typing import List, Optional
 from pydantic import BaseModel, validator
+from app.refuns_dump.schemas import RefundsDump as RefundsDumpModel
 
 
 class WorkplaceBase(BaseModel):
@@ -39,16 +39,11 @@ class WorkplaceCreate(WorkplaceBase):
         return tz
 
 
-class Workplace(WorkplaceBase):
-
-    class ResourceWithReport(BaseModel):
-        report_url: str
-
-        class Config:
-            orm_mode = True
-
-    last_refunds_dump: ResourceWithReport
-    storage_steps_progress: ResourceWithReport
+class WorkplaceModel(WorkplaceBase):
+    """ Represents workplace state
+        in db with all related resources """
+    refunds_dump: RefundsDumpModel
+    # storage_steps_progress: StorageStepsProgressModel
 
     class Config:
-        orm_mode = True
+        orm_mode=True
