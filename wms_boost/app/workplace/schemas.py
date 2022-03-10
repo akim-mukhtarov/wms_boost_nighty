@@ -1,6 +1,6 @@
 import pytz
 from pydantic import BaseModel, validator
-from app.refuns_dump.schemas import RefundsDump as RefundsDumpModel
+from app.refunds_dump.schemas import RefundsDump as RefundsDumpModel
 
 
 class WorkplaceBase(BaseModel):
