@@ -2,6 +2,7 @@ from app.models import User, LastRefundsDump
 from app.wms_api.models import Refund, ReadyRefunds
 from app.wms_api import WmsApi as wms
 from app.sheets_service import SheetsService
+from app.refuns_dump import TodayDump
 
 from .errors import AlreadyProcessed
 from .last_dump import LastDump
@@ -23,18 +24,18 @@ def _get_data_to_dump(
     return extract_refunds_info(data)
 
 
-def dump_ready_refunds(user: User, last_dump: LastRefundsDump) -> int:
+def dump_ready_refunds(user: User, today_state: TodayDump) -> int:
     """ Enqueue the task for dumping refunds """
-    last_dump = LastDump(last_dump)  # use wrapper for state in db
     status = last_dump.status
-    if status == LastRefundsDump.status_choices.enqueued:
+    if status == 'enqueued':
         raise AlreadyProcessed()
 
-    already_included = last_dump.included
+    already_included = today_state.included
 
-    wms_key = last_dump.workplace_id
+    wms_key = today_state.workplace_id
     refunds = _get_data_to_dump(user, wms_key, already_included)
 
-    just_included = SheetsService.append(last_dump.report_url, refunds)
-    last_dump.add_items(just_included)
+    just_included = SheetsService.append(today_state.report_url, refunds)
+    today_state.add_new(just_included)
+
     return just_included
