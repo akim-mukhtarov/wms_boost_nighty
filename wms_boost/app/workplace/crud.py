@@ -19,12 +19,12 @@ def init_workplace(data: WorkplaceCreate):
     refunds_dump_settings = RefundsDumpSettings(
         workplace_id = data.wms_key,
         report_url = data.reports_urls.refunds_dump,
-        redis_key = RefundsDumpSettings.generate_redis_key(workplace_id))
+        redis_key = RefundsDumpSettings.generate_redis_key(data.wms_key))
 
     storage_steps_settings = StorageStepsSettings(
         workplace_id = data.wms_key,
         report_url = data.reports_urls.storage_steps,
-        redis_key = StorageStepsSettings.generate_redis_key(workplace_id))
+        redis_key = StorageStepsSettings.generate_redis_key(data.wms_key))
 
     return workplace, refunds_dump_settings, storage_steps_settings
 
