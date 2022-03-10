@@ -1,6 +1,6 @@
 from typing import Any, Dict
 from app.models import Workplace as DbWorkplace
-from app.refuns_dump import TodayDump
+from app.refunds_dump.today_dump import TodayDump
 from werkzeug.utils import cached_property
 
 
