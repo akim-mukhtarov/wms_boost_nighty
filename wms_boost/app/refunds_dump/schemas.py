@@ -1,14 +1,11 @@
-from app.models import LastRefundsDump as LastRefundsDumpModel
 import pydantic
 
 
-class LastRefundsDump(pydantic.BaseModel):
+class RefundsDump(pydantic.BaseModel):
     report_url: str
     included: int
     processed: int
-
-    date: Optional[datetime]
-    status: LastRefundsDumpModel.status_choices
+    status: str
 
     class Config:
         orm_mode=True
