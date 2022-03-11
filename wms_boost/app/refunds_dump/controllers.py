@@ -15,7 +15,7 @@ from jsonrpcserver import Result, Success, Error
 from . import schemas
 from .crud import get_last_refunds_dump
 from .errors import wrap_exception
-from .today_dump import today_dump
+from .today_dump import TodayDump
 
 
 @app.get(
