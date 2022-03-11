@@ -1,4 +1,5 @@
 from itertools import islice
+from typing import List
 
 from app.models import User, Workplace
 from app.refunds_dump.today_dump import TodayDump
@@ -7,7 +8,7 @@ from app.sheets_service import SheetsService
 
 from .errors import AlreadyProcessed
 from .utils import barcode_required, insert_barcodes
-from .dump_formatter import DumpFormatter
+from .dump_formatter import DumpFormatter, RefundDict
 
 
 class RefundsDumper:
@@ -23,7 +24,7 @@ class RefundsDumper:
         refunds = wms.get_ready_refunds(user.wms_access_token, wms_key)
         return islice(refunds.iter_items, offset, len(refunds))
 
-    def _get_data_to_dump(self) -> List[Dict]:
+    def _get_data_to_dump(self) -> List[RefundDict]:
         """ Fetch ready refunds from wms with given offset
             return parsed and formated for dump """
         refunds = []        # parsed refunds info to dump
