@@ -16,6 +16,7 @@ from . import schemas
 from .crud import get_last_refunds_dump
 from .errors import wrap_exception
 from .today_dump import TodayDump
+from .refunds_dumper import RefundsDumper
 
 
 @app.get(
@@ -41,8 +42,8 @@ def dump_refunds(user: User, workplace_id: int) -> Result:
 
     try:
         workplace = get_workplace(db, workplace_id)
-        today_state = TodayDump(workplace)
-        included = dump_ready_refunds(user, today_state)
+        refunds_dumper = RefundsDumper(user, workplace)
+        included = refunds_dumper.dump()
 
     except Exception as e:
         return wrap_exception(e)
