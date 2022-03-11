@@ -1,4 +1,5 @@
 from typing import Optional
+from inspect import isclass
 from pydantic import BaseModel, ValidationError
 from jsonrpcserver import method, InvalidParams
 
@@ -6,7 +7,8 @@ from jsonrpcserver import method, InvalidParams
 def get_input_model(func) -> Optional[BaseModel]:
     """ Extract pydantic model from func' annotations """
     it = func.__annotations__.values()
-    cond = lambda x: issubclass(x, BaseModel)
+    # BUG: jsonrpcserver return annotation is an instance, not a class
+    cond = lambda x: isclass(x) and issubclass(x, BaseModel)
     res = next((x for x in it if cond(x)), None)
     return res
 
