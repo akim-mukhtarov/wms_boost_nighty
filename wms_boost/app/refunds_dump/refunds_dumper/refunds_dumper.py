@@ -7,6 +7,7 @@ from app.sheets_service import SheetsService
 
 from .errors import AlreadyProcessed
 from .utils import barcode_required, insert_barcodes
+from .dump_formatter import DumpFormatter
 
 
 class RefundsDumper:
@@ -15,6 +16,7 @@ class RefundsDumper:
         self._user = user
         self._workplace = workplace
         self._today_dump = TodayDump(workplace)
+        self._formatter = DumpFormatter(user, workplace)
 
     def _get_ready_refunds(self, offset: int=0):
         """  Fetch ready refunds with given offset """
@@ -30,7 +32,7 @@ class RefundsDumper:
         items = self._get_ready_refunds(offset=self._today_dump.included)
 
         for item in items:
-            refund = parse_refund(item)
+            refund = self._formatter.format(item)
             if barcode_required(item):
                 sku_ids[item.sku] = refund
 
