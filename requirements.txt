@@ -42,5 +42,6 @@ typing-extensions==4.1.1
 urllib3==1.26.8
 uvicorn==0.17.5
 websockets==10.2
+Werkzeug==2.0.3
 wrapt==1.14.0
 yarl==1.7.2
