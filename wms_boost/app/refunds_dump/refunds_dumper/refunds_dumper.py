@@ -19,10 +19,10 @@ class RefundsDumper:
         self._today_dump = TodayDump(workplace)
         self._formatter = DumpFormatter(user, workplace)
 
-    def _get_ready_refunds(self, offset: int=0):
+    def _get_ready_refunds(self, wms_key: int, offset: int=0):
         """  Fetch ready refunds with given offset """
         refunds = wms.get_ready_refunds(self._user.wms_access_token, wms_key)
-        return islice(refunds.iter_items, offset, len(refunds))
+        return islice(refunds.iter_items(), offset, len(refunds))
 
     def _get_data_to_dump(self) -> List[RefundDict]:
         """ Fetch ready refunds from wms with given offset
@@ -30,7 +30,9 @@ class RefundsDumper:
         refunds = []        # parsed refunds info to dump
         sku_ids = {}        # map sku id of refund to refund itself
 
-        items = self._get_ready_refunds(offset=self._today_dump.included)
+        items = self._get_ready_refunds(
+                    wms_key=self._workplace.wms_key,
+                    offset=self._today_dump.included)
 
         for item in items:
             refund = self._formatter.format(item)
