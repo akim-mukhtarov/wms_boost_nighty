@@ -1,3 +1,4 @@
+from typing import List, Dict
 from app.wms_api.models import ProductsInfo
 from .dump_formatter import RefundDict
 
