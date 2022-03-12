@@ -7,8 +7,7 @@ import redis
 
 # helper
 def _get_next_midnight(timezone_name: str) -> int:
-    client_time = ClientTime(timezone_name).add_days_offset(1)
-    next_midnight = client_time.add_days_offset(1)
+    next_midnight = ClientTime(timezone_name).add_days_offset(1)
     return next_midnight.timestamp()
 
 
