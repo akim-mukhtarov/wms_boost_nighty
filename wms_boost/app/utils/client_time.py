@@ -18,10 +18,20 @@ class ClientTime:
         self._today_date = today_date
         return self._today_date
 
-    def get_days_dif(self, date) -> int:
+    def get_days_delta(self, date: datetime.date) -> int:
         today_date = self.get_today_date()
         delta = today_date - acceptance_date
         return delta.days
+
+    def add_days_offset(self, days: int) -> datetime.datetime:
+        today_date = self.get_today_date()
+        date_with_offset = today_date + datetime.timedelta(days=days)
+        # NOTE: return datetime instead of a date
+        return datetime.datetime(
+            year=n_days_ago.year,
+            month=n_days_ago.month,
+            day=n_days_ago.day,
+        )
 
     def get_days_ago(self, days) -> datetime.datetime:
         n_days_ago = self.get_today_date() - datetime.timedelta(days)
