@@ -6,7 +6,7 @@ from app.auth import get_current_user
 from app.auth.security import raw_decode
 from app.models import User
 from app.models import Workplace as DbWorkplace
-from app.rpc import rpc_method
+from app.rpc import rpc_method, RpcErrors
 
 from fastapi import Depends, WebSocket, status
 from fastapi.responses import HTMLResponse
@@ -29,7 +29,9 @@ def init_workplace(user: User, data: schemas.WorkplaceCreate) -> Result:
 
     db_workplace = db.query(DbWorkplace).get(data.wms_key)
     if db_workplace:
-        return Error(6, "Workplace with provided wms_key already exists")
+        return Error(
+                RpcErrors.ALREADY_EXISTS,
+                "Workplace with provided wms_key already exists")
 
     db.add_all(init_db_workplace(data))
     db.commit()
