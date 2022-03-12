@@ -24,7 +24,7 @@ def _get_input_model(func) -> Optional[BaseModel]:
 def rpc_method(func):
     """ Wrap jsonrpcserver' `@method`
         to use it with pydantic models """
-    model = get_input_model(func)
+    model = _get_input_model(func)
     if model:
         rpc_params = model.__annotations__
     else:
