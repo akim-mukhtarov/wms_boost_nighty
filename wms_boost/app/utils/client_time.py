@@ -5,7 +5,7 @@ import pytz
 class ClientTime:
     """ Handles datetime operations in specified timezone """
     def __init__(self, timezone):
-        self._timezone = timezone
+        self._timezone = pytz.timezone(timezone)
         self._today_date = None
 
     def get_today_date(self) -> datetime.date:
@@ -32,6 +32,9 @@ class ClientTime:
             month=n_days_ago.month,
             day=n_days_ago.day,
         )
+        # reinterpret in client's timezone !
+        dt = self._timezone.localize(dt)
+        return dt
 
     def get_days_ago(self, days) -> datetime.datetime:
         n_days_ago = self.get_today_date() - datetime.timedelta(days)
