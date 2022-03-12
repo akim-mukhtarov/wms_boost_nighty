@@ -35,7 +35,4 @@ def wrap_exception(exc: Exception):
                 "Precondition failed")
 
     else:
-        #
-        raise e
-        #
         return Error(RpcErrors.INTERNAL, "Internal error", data=str(exc))
