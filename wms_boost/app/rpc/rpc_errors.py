@@ -1,13 +1,11 @@
-from enum import Enum
 
 
-RpcErrors = Enum('RpcErrors', [
-    'NOT_FOUND',
-    'ALREADY_EXISTS',
-    'NOT_AUTHORIZED',
-    'PERMISSION_DENIED',
-    'FAILED_PRECONDITION',
-    'UNIMPLEMENTED',
-    'UNAVAILABLE',
-    'INTERNAL'
-])
+class RpcErrors:
+    NOT_FOUND = 1
+    ALREADY_EXISTS = 2
+    NOT_AUTHORIZED = 3
+    PERMISSION_DENIED = 4
+    FAILED_PRECONDITION = 5
+    UNIMPLEMENTED = 6
+    UNAVAILABLE = 7
+    INTERNAL = 8

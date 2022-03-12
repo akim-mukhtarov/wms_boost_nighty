@@ -11,4 +11,4 @@ async def private_rpc_router(
         request: Request,
         user: User = Depends(get_current_user)
 ):
-    return Response(dispatch(await request.body()))
+    return Response(dispatch(await request.body(), context = user))
