@@ -1,5 +1,6 @@
 from jsonrpcserver import Error
 from app.rpc import RpcErrors
+from .refunds_dumper import AlreadyProcessed
 # TODO: consider handling wms-related excpetions in separate utility?
 # to aboid copying the same code
 def wrap_exception(exc: Exception):
