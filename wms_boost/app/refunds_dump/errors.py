@@ -1,6 +1,6 @@
 from jsonrpcserver import Error
 from app.rpc import RpcErrors
-from app.wms_api import AuthenticationError
+from app.wms_api import AuthenticationError, UnexpectedApiResponse
 from .refunds_dumper import AlreadyProcessed
 # TODO: consider handling wms-related excpetions in separate utility?
 # to aboid copying the same code
