@@ -58,6 +58,9 @@ class RefundsDumper:
         wms_key = self._today_dump.workplace_id
         refunds = self._get_data_to_dump()
 
+        if not len(refunds):
+            return 0
+
         just_included = SheetsService.append(
                             self._today_dump.report_url,
                             refunds)
