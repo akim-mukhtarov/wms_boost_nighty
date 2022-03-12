@@ -22,7 +22,7 @@ from .workplace import Workplace
 
 
 @rpc_method
-def init_workplace(data: schemas.WorkplaceCreate) -> Result:
+def init_workplace(user: User, data: schemas.WorkplaceCreate) -> Result:
     """  Initialize `Workplace` and linked resources:
             `RefundsDumpSettings` and `StorageStepsSettings` """
     db = next(iter(get_db()))
