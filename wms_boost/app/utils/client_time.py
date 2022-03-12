@@ -45,5 +45,4 @@ class ClientTime:
             day=n_days_ago.day,
         )
         # reinterpret in client's timezone !
-        dt = self._timezone.localize(dt)
-        return dt
+        return self._timezone.localize(dt)
