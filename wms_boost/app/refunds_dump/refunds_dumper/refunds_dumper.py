@@ -21,7 +21,7 @@ class RefundsDumper:
 
     def _get_ready_refunds(self, offset: int=0):
         """  Fetch ready refunds with given offset """
-        refunds = wms.get_ready_refunds(user.wms_access_token, wms_key)
+        refunds = wms.get_ready_refunds(self._user.wms_access_token, wms_key)
         return islice(refunds.iter_items, offset, len(refunds))
 
     def _get_data_to_dump(self) -> List[RefundDict]:
