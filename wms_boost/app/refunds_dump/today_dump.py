@@ -76,7 +76,7 @@ class TodayDump:
             values.append(('status', 'completed'))
         self._update_state(values)
 
-    def _update_state(*args) -> None:
+    def _update_state(self, *args) -> None:
         """ Update/set values stored in Redis
             setup expiration date to the end of the current day """
         for k, v in args:
