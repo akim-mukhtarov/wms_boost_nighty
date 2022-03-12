@@ -1,3 +1,4 @@
+from typing import Tuple
 from contextlib import contextmanager
 
 
@@ -21,7 +22,7 @@ class SheetsService:
         try:
             conn = SheetsService.Connection()
             yield conn
-            
+
         except Exception:
             conn.close()
             raise e
