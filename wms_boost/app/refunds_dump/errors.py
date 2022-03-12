@@ -7,11 +7,13 @@ from .refunds_dumper import AlreadyProcessed
 def wrap_exception(exc: Exception):
     """ An utility to wrap exceptions while
         dump refunds in JSONRPC error format """
-    if isinstance(AuthenticationError):
+    if isinstance(exc, AuthenticationError):
         return Error(RpcErrors.NOT_AUTHORIZED)  # 403
-    elif isinstance(UnexpectedApiResponse):
+    elif isinstance(exc, UnexpectedApiResponse):
         return Error(RpcErrors.UNIMPLEMENTED)
-    elif isinstance(WmsServerError):
+    elif isinstance(exc, WmsServerError):
         return Error(RpcErrors.UNAVAILABLE)
-    elif isinstance(AlreadyProcessed):
+    elif isinstance(exc, AlreadyProcessed):
         return Error(RpcErrors.FAILED_PRECONDITION)
+    else:
+        return Error(RpcErrors.INTERNAL)
