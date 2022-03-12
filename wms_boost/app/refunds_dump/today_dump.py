@@ -69,6 +69,8 @@ class TodayDump:
 
     def update_progress(self, processed: int) -> None:
         # update `processed` field and write out changes to Redis
+        if not processed:
+            return
         self._processed = processed
         values = [('processed', processed)]
         if self._processed == self.included:
