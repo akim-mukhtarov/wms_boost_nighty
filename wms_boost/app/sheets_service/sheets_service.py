@@ -12,13 +12,15 @@ class SheetsService:
         def close(self) -> None:
             pass
 
-    def append(self, sheet_url: str, data) -> int:
-        with self._connect() as conn:
+    @classmethod
+    def append(cls, sheet_url: str, data) -> int:
+        with cls._connect() as conn:
             conn.send("append", (sheet_url, data))
         return len(data)
 
+    @classmethod
     @contextmanager
-    def _connect(self):
+    def _connect(cls):
         try:
             conn = SheetsService.Connection()
             yield conn
