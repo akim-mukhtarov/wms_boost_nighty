@@ -38,6 +38,7 @@ class RefundsDumper:
             refund = self._formatter.format(item)
             if barcode_required(item):
                 sku_ids[item.sku] = refund
+            refunds.append(refund)
 
         if len(sku_ids):
             products_info = wms.get_products_info(
